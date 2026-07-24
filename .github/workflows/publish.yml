@@ -1,0 +1,161 @@
+name: Release
+
+# Release pipeline for CUDA-MOEA.
+#
+# Trigger: push a tag named "v<version>", for example:
+#   git tag -a v0.1.0 -m "CUDA-MOEA 0.1.0"
+#   git push origin v0.1.0
+#
+# The pipeline:
+#   1. verify-version  — tag must match pyproject.toml, CMakeLists.txt, and
+#                        cuda_moea.__version__
+#   2. test            — compileall + unit tests (CUDA tests skip on the
+#                        GPU-less GitHub runner)
+#   3. build           — sdist + Linux x86_64 wheel compiled with the CUDA
+#                        Toolkit for the architectures in
+#                        CMAKE_CUDA_ARCHITECTURES below
+#   4. publish-pypi    — uploads both distributions to PyPI through OIDC
+#                        trusted publishing (no API token stored in GitHub)
+#   5. github-release  — creates the GitHub Release and attaches the
+#                        distributions
+#
+# One-time PyPI setup: on pypi.org, add a "pending publisher" for project
+# cuda-moea pointing at this repository, workflow publish.yml, and the
+# environment name "pypi". Alternatively create a GitHub environment named
+# "pypi" after the project exists and register the publisher there.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  PYTHON_VERSION: "3.11"
+  # Comma-separated compute capabilities, one wheel per release covering all
+  # of them. Keep in sync with the table in README.md.
+  BUILD_CUDA_ARCHS: "80,86,89,90,100,120"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches project versions
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          pyproject=$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)
+          cmake=$(grep -m1 'project(cuda_moea VERSION' CMakeLists.txt \
+            | sed -E 's/.*VERSION ([0-9.]+).*/\1/')
+          init=$(grep -m1 '__version__ = ' python/cuda_moea/__init__.py \
+            | cut -d'"' -f2)
+          echo "tag=$tag pyproject=$pyproject cmake=$cmake __init__=$init"
+          if [ "$tag" != "$pyproject" ] || [ "$tag" != "$cmake" ] || \
+             [ "$tag" != "$init" ]; then
+            echo "::error::Tag v$tag disagrees with project metadata; see docs/RELEASE_CHECKLIST.md"
+            exit 1
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Compile Python sources
+        run: python -m compileall -q python examples tests
+
+      # The native extension needs a CUDA toolchain to build, so it is not
+      # installed here; CUDA-dependent tests skip automatically.
+      - name: Run unit tests
+        run: python -m unittest discover -s tests/python -v
+
+  build:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # Compilation needs nvcc and the CUDA libraries only; no GPU is
+      # required on the runner. Keep the version aligned with the
+      # "CUDA Toolkit" requirement in README.md and the PyTorch build below.
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.29
+        with:
+          cuda: "12.8.1"
+          linux-local-args: '["--toolkit"]'
+          sub-packages: '["nvcc", "cudart", "cublas", "cusolver"]'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cu128
+          python -m pip install build setuptools wheel "cmake>=3.24"
+
+      - name: Build source distribution
+        run: python -m build --sdist
+
+      - name: Build wheel
+        env:
+          CMAKE_CUDA_ARCHITECTURES: ${{ env.BUILD_CUDA_ARCHS }}
+        run: python -m build --wheel
+
+      - name: Inspect distributions
+        run: |
+          ls -l dist
+          python -m zipfile -l dist/cuda_moea-*.whl
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+          if-no-files-found: error
+
+  publish-pypi:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # OIDC trusted publishing, no API token needed
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # create the release and upload assets
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --generate-notes
