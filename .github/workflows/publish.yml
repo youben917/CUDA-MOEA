@@ -71,16 +71,21 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      # Compilation needs nvcc and the CUDA libraries only; no GPU is
-      # required on the runner. Keep the version aligned with the
-      # "CUDA Toolkit" requirement in README.md and the PyTorch build below.
+      # Compilation needs the CUDA Toolkit only; no GPU is required on the
+      # runner. Install the full toolkit so its layout matches a local
+      # toolkit installation and every CUDA:: library target resolves.
       - name: Install CUDA Toolkit
         uses: Jimver/cuda-toolkit@v0.2.29
         with:
           cuda: "12.8.1"
-          method: "network"
-          sub-packages: '["nvcc", "cudart"]'
-          non-cuda-sub-packages: '["libcublas-dev", "libcusolver-dev"]'
+          linux-local-args: '["--toolkit"]'
+
+      - name: Diagnose CUDA toolchain
+        run: |
+          nvcc --version
+          echo "CUDA_PATH=$CUDA_PATH"
+          ls "$CUDA_PATH/lib64" | head -40
+          ls "$CUDA_PATH/include" | head -40
 
       - name: Install build dependencies
         run: |
