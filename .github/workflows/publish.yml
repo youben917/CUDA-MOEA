@@ -31,9 +31,9 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
-  # Comma-separated compute capabilities, one wheel per release covering all
-  # of them. Keep in sync with the table in README.md.
-  BUILD_CUDA_ARCHS: "80,86,89,90,100,120"
+  # Semicolon-separated compute capabilities (CMake list syntax), one wheel
+  # per release covering all of them. Keep in sync with the table in README.md.
+  BUILD_CUDA_ARCHS: "80;86;89;90;100;120"
 
 permissions:
   contents: read
