@@ -104,11 +104,13 @@ Install the latest release from PyPI:
 python -m pip install cuda-moea
 ```
 
-A pre-built wheel is published for Linux x86_64, CPython 3.11, and PyTorch
-built for CUDA 12.8, covering compute capabilities 80, 86, 89, 90, 100, and
-120. On other Python versions, platforms, or PyTorch/CUDA stacks, pip builds
-from the source archive instead, which requires the toolchain listed under
-[Requirements](#requirements).
+PyPI serves the source archive; pip compiles the extension with your local
+toolchain, which requires the environment listed under
+[Requirements](#requirements). Pre-built wheels for Linux x86_64, CPython
+3.11, and PyTorch built for CUDA 12.8 (compute capabilities 80, 86, 89, 90,
+100, and 120) are attached to
+[GitHub Releases](https://github.com/youben917/CUDA-MOEA/releases) for
+environments that match that stack exactly.
 
 ### Install from a source checkout
 

@@ -62,8 +62,9 @@ procedure.
       announcement.
 
 The tag-triggered release workflow lives in `.github/workflows/publish.yml`.
-It verifies version consistency, runs the test suite, builds the sdist and a
-Linux CUDA wheel, publishes to PyPI through OIDC trusted publishing, and
-creates the GitHub Release. Before the first upload, a maintainer must
+It verifies version consistency, runs the test suite, and builds the sdist
+and a Linux CUDA wheel. The sdist is published to PyPI through OIDC trusted
+publishing (PyPI rejects non-manylinux Linux wheels), and both archives are
+attached to the GitHub Release. Before the first upload, a maintainer must
 register the pending publisher (or the `pypi` environment publisher) on
 pypi.org as described in the workflow header.

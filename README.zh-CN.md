@@ -96,10 +96,11 @@ PyTorch、CUDA Toolkit 和宿主编译器必须 ABI 兼容。本仓库目前未�
 python -m pip install cuda-moea
 ```
 
-预编译 wheel 面向 Linux x86_64、CPython 3.11 和 CUDA 12.8 版 PyTorch，
-覆盖计算能力 80、86、89、90、100、120。在其他 Python 版本、平台或
-PyTorch/CUDA 组合下，pip 会改用源码包本地编译，此时需要[环境要求](#环境要求)
-中列出的工具链。
+PyPI 提供的是源码包，pip 会使用本机工具链编译扩展，需要[环境要求](#环境要求)
+中列出的环境。针对完全匹配的环境（Linux x86_64、CPython 3.11、CUDA 12.8 版
+PyTorch，计算能力 80、86、89、90、100、120），
+[GitHub Releases](https://github.com/youben917/CUDA-MOEA/releases) 页面附有
+预编译 wheel。
 
 ### 从源码安装
 

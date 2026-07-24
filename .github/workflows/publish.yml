@@ -14,10 +14,11 @@ name: Release
 #                        below, then installs the wheel and runs the unit
 #                        tests against it (CUDA tests skip on the GPU-less
 #                        GitHub runner)
-#   3. publish-pypi    — uploads both distributions to PyPI through OIDC
-#                        trusted publishing (no API token stored in GitHub)
-#   4. github-release  — creates the GitHub Release and attaches the
-#                        distributions
+#   3. publish-pypi    — uploads the source distribution to PyPI through OIDC
+#                        trusted publishing (PyPI rejects non-manylinux Linux
+#                        wheels; no API token stored in GitHub)
+#   4. github-release  — creates the GitHub Release and attaches both the
+#                        sdist and the pre-built wheel
 #
 # One-time PyPI setup: on pypi.org, add a "pending publisher" for project
 # cuda-moea pointing at this repository, workflow publish.yml, and the
@@ -136,8 +137,17 @@ jobs:
           name: dist
           path: dist
 
-      - name: Publish to PyPI
+      # PyPI rejects plain linux_x86_64 wheels (manylinux tags only), so only
+      # the source archive is uploaded; pip users then compile against their
+      # own PyTorch, which also avoids torch ABI mismatches. The pre-built
+      # wheel ships with the GitHub Release instead.
+      - name: Keep only the source archive
+        run: rm dist/*.whl
+
+      - name: Publish source distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
 
   github-release:
     needs: build
@@ -145,6 +155,9 @@ jobs:
     permissions:
       contents: write  # create the release and upload assets
     steps:
+      # gh release create inspects the local git repository for context.
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: dist
