@@ -118,6 +118,9 @@ CUDA-MOEA/
 ## Release status
 
 The package metadata identifies the current version as `0.1.0`. This checkout
-does not contain a license file, an automated publishing workflow, or a stated
-support/security channel. Resolve those items before a public release; in the
-absence of a license, users do not receive an open-source license by default.
+does not yet contain an automated publishing workflow or a stated
+support/security channel.
+
+## License
+
+CUDA-MOEA is licensed under the [MIT License](LICENSE).

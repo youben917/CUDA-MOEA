@@ -107,3 +107,7 @@ CUDA-MOEA/
 ├── pyproject.toml
 └── setup.py
 ```
+
+## 许可证
+
+CUDA-MOEA 基于 [MIT License](LICENSE) 开源。
