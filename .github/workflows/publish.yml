@@ -96,10 +96,14 @@ jobs:
       - name: Build source distribution
         run: python -m build --sdist
 
+      # --no-isolation is required: the extension must compile against the
+      # same PyTorch it will run with (see docs/DEVELOPMENT.md). Building in
+      # an isolated env would pull a different torch from pypi.org and break
+      # the tensor ABI at runtime.
       - name: Build wheel
         env:
           CMAKE_CUDA_ARCHITECTURES: ${{ env.BUILD_CUDA_ARCHS }}
-        run: python -m build --wheel
+        run: python -m build --wheel --no-isolation
 
       - name: Inspect distributions
         run: |
