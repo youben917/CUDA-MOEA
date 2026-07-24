@@ -1,0 +1,7 @@
+include CMakeLists.txt
+recursive-include python/csrc *.cpp *.h *.cu *.cuh CMakeLists.txt
+graft docs
+graft examples
+graft tests
+global-exclude *.py[cod]
+global-exclude __pycache__

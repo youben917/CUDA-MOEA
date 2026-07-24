@@ -1,0 +1,33 @@
+environment,algorithm,framework,algorithm_label,metric,target_label,target_scope,target_value,reached,total,reached_rate,censored,time_ms_median,time_ms_q1,time_ms_q3
+mo_hopper_m3,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,hv,EvoX final median,within observed 100-generation run,4537720082,9,10,0.9,1,330047.0762,240005.3535,389515.2402
+mo_hopper_m3,nsga3,evox,EvoX–NSGA-III,hv,EvoX final median,within observed 100-generation run,4537720082,7,10,0.7,3,525111.9336,424330.9922,593081.1035
+mo_hopper_m3,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,hv,90% EvoX final median,within observed 100-generation run,4083948074,10,10,1,0,239800.2363,157459.4131,299955.082
+mo_hopper_m3,nsga3,evox,EvoX–NSGA-III,hv,90% EvoX final median,within observed 100-generation run,4083948074,10,10,1,0,418964.4355,310919.9492,490025.5254
+mo_hopper_m3,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,eu,EvoX final median,within observed 100-generation run,0.4856392597,8,10,0.8,2,300030.5332,239840.2744,427336.9521
+mo_hopper_m3,nsga3,evox,EvoX–NSGA-III,eu,EvoX final median,within observed 100-generation run,0.4856392597,6,10,0.6,4,457104.8574,373120.7568,516815.9902
+mo_hopper_m3,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,eu,90% EvoX final median,within observed 100-generation run,0.4370753337,10,10,1,0,29988.92188,29931.14209,59948.37842
+mo_hopper_m3,nsga3,evox,EvoX–NSGA-III,eu,90% EvoX final median,within observed 100-generation run,0.4370753337,10,10,1,0,52937.57812,35287.17871,70684.44141
+mo_hopper_m3,rvea,cuda_moea,CUDA-MOEA–RVEA,hv,EvoX final median,within observed 100-generation run,1.318192644e+10,0,10,0,10,,,
+mo_hopper_m3,rvea,evox,EvoX–RVEA,hv,EvoX final median,within observed 100-generation run,1.318192644e+10,5,10,0.5,5,549084.8789,514968.7578,584772.5781
+mo_hopper_m3,rvea,cuda_moea,CUDA-MOEA–RVEA,hv,90% EvoX final median,within observed 100-generation run,1.18637338e+10,6,10,0.6,4,569730.8203,544457.3271,594759.043
+mo_hopper_m3,rvea,evox,EvoX–RVEA,hv,90% EvoX final median,within observed 100-generation run,1.18637338e+10,7,10,0.7,3,446451.8711,377614.9043,482281.0176
+mo_hopper_m3,rvea,cuda_moea,CUDA-MOEA–RVEA,eu,EvoX final median,within observed 100-generation run,0.7051111556,3,10,0.3,7,670084.4883,653479.8438,670111.6035
+mo_hopper_m3,rvea,evox,EvoX–RVEA,eu,EvoX final median,within observed 100-generation run,0.7051111556,6,10,0.6,4,549923.6953,514995.2715,635642.7783
+mo_hopper_m3,rvea,cuda_moea,CUDA-MOEA–RVEA,eu,90% EvoX final median,within observed 100-generation run,0.63460004,8,10,0.8,2,452398.0742,427185.5371,521506.9961
+mo_hopper_m3,rvea,evox,EvoX–RVEA,eu,90% EvoX final median,within observed 100-generation run,0.63460004,10,10,1,0,412681.9648,343300.5957,542271.2881
+mo_swimmer,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,hv,EvoX final median,within observed 100-generation run,34.05739987,3,10,0.3,7,527835.6094,506878.8477,560133.7051
+mo_swimmer,nsga3,evox,EvoX–NSGA-III,hv,EvoX final median,within observed 100-generation run,34.05739987,5,10,0.5,5,1034717.848,923483.5195,1150526.07
+mo_swimmer,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,hv,90% EvoX final median,within observed 100-generation run,30.65165989,10,10,1,0,299980.5449,252370.5508,346146.7129
+mo_swimmer,nsga3,evox,EvoX–NSGA-III,hv,90% EvoX final median,within observed 100-generation run,30.65165989,10,10,1,0,553035.9395,363646.2959,620019.0938
+mo_swimmer,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,eu,EvoX final median,within observed 100-generation run,0.7409200033,6,10,0.6,4,365081.9434,347281.4639,409111.2939
+mo_swimmer,nsga3,evox,EvoX–NSGA-III,eu,EvoX final median,within observed 100-generation run,0.7409200033,5,10,0.5,5,866542.0859,807219.9883,1044477.434
+mo_swimmer,nsga3,cuda_moea,CUDA-MOEA–NSGA-III,eu,90% EvoX final median,within observed 100-generation run,0.6668280029,10,10,1,0,69633.30664,34872.09082,70015.71484
+mo_swimmer,nsga3,evox,EvoX–NSGA-III,eu,90% EvoX final median,within observed 100-generation run,0.6668280029,10,10,1,0,59801.59375,59355.77246,117485.1104
+mo_swimmer,rvea,cuda_moea,CUDA-MOEA–RVEA,hv,EvoX final median,within observed 100-generation run,0.7764749875,10,10,1,0,0,0,0
+mo_swimmer,rvea,evox,EvoX–RVEA,hv,EvoX final median,within observed 100-generation run,0.7764749875,10,10,1,0,0,0,0
+mo_swimmer,rvea,cuda_moea,CUDA-MOEA–RVEA,hv,90% EvoX final median,within observed 100-generation run,0.6988274888,10,10,1,0,0,0,0
+mo_swimmer,rvea,evox,EvoX–RVEA,hv,90% EvoX final median,within observed 100-generation run,0.6988274888,10,10,1,0,0,0,0
+mo_swimmer,rvea,cuda_moea,CUDA-MOEA–RVEA,eu,EvoX final median,within observed 100-generation run,0.05565801361,10,10,1,0,0,0,0
+mo_swimmer,rvea,evox,EvoX–RVEA,eu,EvoX final median,within observed 100-generation run,0.05565801361,10,10,1,0,0,0,0
+mo_swimmer,rvea,cuda_moea,CUDA-MOEA–RVEA,eu,90% EvoX final median,within observed 100-generation run,0.05009221225,10,10,1,0,0,0,0
+mo_swimmer,rvea,evox,EvoX–RVEA,eu,90% EvoX final median,within observed 100-generation run,0.05009221225,10,10,1,0,0,0,0

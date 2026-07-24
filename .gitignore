@@ -1,0 +1,15 @@
+/build/
+/build-*/
+/.venv/
+/.mypy_cache/
+/.ruff_cache/
+/.coverage
+/dist/
+/_skbuild/
+*.egg-info/
+*.so
+__pycache__/
+.pytest_cache/
+output/
+.vscode/
+.DS_Store

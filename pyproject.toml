@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "cmake>=3.24", "torch>=2.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cuda-moea"
+version = "0.1.0"
+description = "GPU-accelerated multi-objective evolutionary algorithms for PyTorch"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["torch>=2.1"]
+
+[tool.setuptools]
+packages = ["cuda_moea"]
+package-dir = {"" = "python"}
