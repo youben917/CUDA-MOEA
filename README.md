@@ -12,6 +12,8 @@ The supported public interface is Python. The native CUDA backend is packaged
 as the private `cuda_moea._C` extension; it is not a standalone CLI or a public
 C++ API.
 
+We will release the corresponding research article in Auguest 2026.
+
 ## Features
 
 - NSGA-III and RVEA algorithm co entry points
