@@ -61,5 +61,9 @@ procedure.
 - [ ] Obtain maintainer approval before any registry upload or public
       announcement.
 
-The repository currently has no automated publishing workflow. Upload steps
-remain intentionally unspecified until maintainers establish and verify them.
+The tag-triggered release workflow lives in `.github/workflows/publish.yml`.
+It verifies version consistency, runs the test suite, builds the sdist and a
+Linux CUDA wheel, publishes to PyPI through OIDC trusted publishing, and
+creates the GitHub Release. Before the first upload, a maintainer must
+register the pending publisher (or the `pypi` environment publisher) on
+pypi.org as described in the workflow header.

@@ -96,7 +96,21 @@ results are in the [combined benchmark report](tests/benchmark/results/REPORT.md
 PyTorch, the CUDA Toolkit, and the host compiler must be ABI-compatible. The
 repository does not currently define a tested operating-system matrix.
 
-## Install from source
+## Installation
+
+Install the latest release from PyPI:
+
+```bash
+python -m pip install cuda-moea
+```
+
+A pre-built wheel is published for Linux x86_64, CPython 3.11, and PyTorch
+built for CUDA 12.8, covering compute capabilities 80, 86, 89, 90, 100, and
+120. On other Python versions, platforms, or PyTorch/CUDA stacks, pip builds
+from the source archive instead, which requires the toolchain listed under
+[Requirements](#requirements).
+
+### Install from a source checkout
 
 From the repository root, in an environment that already contains a
 CUDA-enabled PyTorch installation, run:
@@ -230,9 +244,11 @@ CUDA-MOEA/
 
 ## Release status
 
-The package metadata identifies the current version as `0.1.0`. This checkout
-does not yet contain an automated publishing workflow or a stated
-support/security channel.
+The package metadata identifies the current version as `0.1.0`. Pushing a
+`v<version>` tag runs the automated release workflow in
+`.github/workflows/publish.yml`: version-consistency check, tests, sdist and
+Linux CUDA wheel builds, PyPI upload through trusted publishing, and the
+GitHub Release. This checkout does not yet state a support/security channel.
 
 ## License
 

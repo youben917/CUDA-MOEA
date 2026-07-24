@@ -87,8 +87,15 @@ python -m pip wheel . --no-build-isolation --no-deps --wheel-dir dist
 python -m zipfile -l dist/cuda_moea-0.1.0-*.whl
 ```
 
-Building or uploading a source distribution is not documented because this
-repository has no verified release automation or publishing procedure.
+Build the source distribution the same way the release workflow
+(`.github/workflows/publish.yml`) does:
+
+```bash
+python -m build --sdist
+```
+
+Registry upload happens only through that tag-triggered workflow; do not
+upload local builds by hand.
 
 ## Benchmark and report maintenance
 

@@ -88,7 +88,20 @@ DTLZ 测试集上的世代耗时的中位加速比：
 PyTorch、CUDA Toolkit 和宿主编译器必须 ABI 兼容。本仓库目前未定义经过
 测试的操作系统矩阵。
 
-## 从源码安装
+## 安装
+
+从 PyPI 安装最新发布版本：
+
+```bash
+python -m pip install cuda-moea
+```
+
+预编译 wheel 面向 Linux x86_64、CPython 3.11 和 CUDA 12.8 版 PyTorch，
+覆盖计算能力 80、86、89、90、100、120。在其他 Python 版本、平台或
+PyTorch/CUDA 组合下，pip 会改用源码包本地编译，此时需要[环境要求](#环境要求)
+中列出的工具链。
+
+### 从源码安装
 
 在仓库根目录、已安装 CUDA 版 PyTorch 的环境中执行：
 
@@ -217,8 +230,10 @@ CUDA-MOEA/
 
 ## 发布状态
 
-包元数据标识的当前版本为 `0.1.0`。当前检出尚未包含自动化发布流程，
-也未声明支持/安全渠道。
+包元数据标识的当前版本为 `0.1.0`。推送 `v<版本号>` 标签会触发
+`.github/workflows/publish.yml` 中的自动化发布流程：版本一致性检查、
+测试、构建 sdist 与 Linux CUDA wheel、通过可信发布上传 PyPI，并创建
+GitHub Release。当前检出尚未声明支持/安全渠道。
 
 ## 许可证
 
