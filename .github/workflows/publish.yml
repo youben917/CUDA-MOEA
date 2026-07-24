@@ -9,14 +9,14 @@ name: Release
 # The pipeline:
 #   1. verify-version  — tag must match pyproject.toml, CMakeLists.txt, and
 #                        cuda_moea.__version__
-#   2. test            — compileall + unit tests (CUDA tests skip on the
-#                        GPU-less GitHub runner)
-#   3. build           — sdist + Linux x86_64 wheel compiled with the CUDA
-#                        Toolkit for the architectures in
-#                        CMAKE_CUDA_ARCHITECTURES below
-#   4. publish-pypi    — uploads both distributions to PyPI through OIDC
+#   2. build           — sdist + Linux x86_64 wheel compiled with the CUDA
+#                        Toolkit for the architectures in BUILD_CUDA_ARCHS
+#                        below, then installs the wheel and runs the unit
+#                        tests against it (CUDA tests skip on the GPU-less
+#                        GitHub runner)
+#   3. publish-pypi    — uploads both distributions to PyPI through OIDC
 #                        trusted publishing (no API token stored in GitHub)
-#   5. github-release  — creates the GitHub Release and attaches the
+#   4. github-release  — creates the GitHub Release and attaches the
 #                        distributions
 #
 # One-time PyPI setup: on pypi.org, add a "pending publisher" for project
@@ -60,29 +60,6 @@ jobs:
             exit 1
           fi
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-
-      - name: Compile Python sources
-        run: python -m compileall -q python examples tests
-
-      # The native extension needs a CUDA toolchain to build, so it is not
-      # installed here; CUDA-dependent tests skip automatically.
-      - name: Run unit tests
-        run: python -m unittest discover -s tests/python -v
-
   build:
     needs: verify-version
     runs-on: ubuntu-latest
@@ -101,8 +78,9 @@ jobs:
         uses: Jimver/cuda-toolkit@v0.2.29
         with:
           cuda: "12.8.1"
-          linux-local-args: '["--toolkit"]'
-          sub-packages: '["nvcc", "cudart", "cublas", "cusolver"]'
+          method: "network"
+          sub-packages: '["nvcc", "cudart"]'
+          non-cuda-sub-packages: '["libcublas-dev", "libcusolver-dev"]'
 
       - name: Install build dependencies
         run: |
@@ -123,6 +101,14 @@ jobs:
           ls -l dist
           python -m zipfile -l dist/cuda_moea-*.whl
 
+      # Run the test suite against the built wheel. CUDA-dependent tests in
+      # tests/python/test_api.py skip automatically on the GPU-less runner.
+      - name: Test the built wheel
+        run: |
+          python -m pip install dist/cuda_moea-*.whl
+          python -m compileall -q python examples tests
+          python -m unittest discover -s tests/python -v
+
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -130,7 +116,7 @@ jobs:
           if-no-files-found: error
 
   publish-pypi:
-    needs: [test, build]
+    needs: build
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
@@ -145,7 +131,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
-    needs: [test, build]
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write  # create the release and upload assets
