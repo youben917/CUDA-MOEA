@@ -1,25 +1,87 @@
+<p align="center">
+  <img src="assets/logo.svg" alt="CUDA-MOEA" width="640">
+</p>
+
 # CUDA-MOEA
 
 English | [简体中文](README.zh-CN.md)
 
-CUDA-MOEA is a Python/PyTorch package for running multi-objective evolutionary algorithms on NVIDIA GPUs.
+GPU-accelerated multi-objective evolutionary algorithms for PyTorch.
 
-It features a fully CUDA-native backend with each kernels carefully optimized for maximum computational efficiency and GPU performance.
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Python](https://img.shields.io/badge/python-%E2%89%A53.9-blue)
+![PyTorch](https://img.shields.io/badge/pytorch-%E2%89%A52.1-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Currently, it renders **NSGA-III** and **RVEA** with DTLZ benchmark problems.
+CUDA-MOEA is a Python/PyTorch package for running multi-objective evolutionary
+algorithms (MOEAs) on NVIDIA GPUs. The entire evolutionary loop — problem
+evaluation, mating, crossover, mutation, reference-direction maintenance, and
+environmental selection — runs as CUDA-native kernels, so population data
+never leaves the GPU between generations.
 
 The supported public interface is Python. The native CUDA backend is packaged
-as the private `cuda_moea._C` extension; it is not a standalone CLI or a public
-C++ API.
+as the private `cuda_moea._C` extension; it is not a standalone CLI or a
+public C++ API.
 
-We will release the corresponding research article in Auguest 2026.
+We will release the corresponding research article in August 2026.
 
 ## Features
 
-- NSGA-III and RVEA algorithm co entry points
-- Tournament mating, simulated binary crossover (SBX), and polynomial mutation
-- DTLZ1–7, ConvexDTLZ2, C1/C2/C3-DTLZ, and CSDP problems
-- Custom problems and operators written with PyTorch
+- **Algorithms**: NSGA-III and RVEA, through the `NSGA3` / `RVEA` entry
+  points or the generic `Algorithm` / `AlgorithmBuilder` interface.
+- **CUDA-native pipeline**: every stage of the generation loop is a
+  hand-optimized CUDA kernel; inputs and results are `torch.Tensor` objects
+  with zero-copy population views.
+- **Built-in problems**: DTLZ1–7, ConvexDTLZ2, C1/C2/C3-DTLZ constrained
+  variants, and CSDP.
+- **Composable operators**: tournament/random mating, simulated binary
+  crossover (SBX), polynomial/no mutation, Das-Dennis, adaptive RVEA, and
+  user-defined reference directions.
+- **PyTorch extensibility**: write custom problems and operators in plain
+  PyTorch — including neural-network objectives — and plug them into the GPU
+  loop.
+- **Full lifecycle control**: run to completion or step generation by
+  generation, inspect the live population, and save periodic run snapshots.
+
+## Performance
+
+CUDA-MOEA was benchmarked against [EvoX](https://github.com/EMI-Group/evox)
+1.3.0 (CUDA-MOEA 0.1.0, PyTorch 2.12.0, NVIDIA RTX PRO 6000 Blackwell).
+Median generation-time speedups on the DTLZ suite:
+
+| Scaling study | NSGA-III | RVEA |
+| --- | ---: | ---: |
+| Baseline (Group A, 8 problems) | 5.79–12.42× | 12.08–12.73× |
+| Population scaling (Group B, largest comparable point) | 271.92× at `N=32768` | 247.26× at `N=16384` |
+| Dimension scaling (Group C, `D=131072`) | 10.12× | 10.27× |
+
+At nominal `N=32768`, EvoX RVEA ran out of memory in all 10 repeats while
+CUDA-MOEA completed all 10.
+
+Per-generation time (left) and speedup over EvoX (right), under population
+scaling (top) and dimension scaling (bottom):
+
+<p><img src="tests/benchmark/DTLZ/results/images/population_generation_time.png" alt="Per-generation time vs population size" width="49%"> <img src="tests/benchmark/DTLZ/results/images/population_speedup.png" alt="Population scaling speedup vs EvoX" width="49%"></p>
+<p><img src="tests/benchmark/DTLZ/results/images/dimension_generation_time.png" alt="Per-generation time vs decision dimension" width="49%"> <img src="tests/benchmark/DTLZ/results/images/dimension_speedup.png" alt="Dimension scaling speedup vs EvoX" width="49%"></p>
+
+Solution quality (IGD) is problem- and algorithm-dependent: neither framework
+won everywhere, and these figures must not be extrapolated to untested GPUs,
+software stacks, or problems. Timing covers the generation loop after
+initialization. The full protocol, statistics, and MoRobtrol control-suite
+results are in the [combined benchmark report](tests/benchmark/results/REPORT.md).
+
+## Built-in components
+
+| Category | Components |
+| --- | --- |
+| Algorithms | `NSGA3`, `RVEA` (plus generic `Algorithm`, `AlgorithmBuilder`) |
+| Problems | `DTLZ1`–`DTLZ7`, `ConvexDTLZ2`, `C1DTLZ1`, `C1DTLZ3`, `C2DTLZ2`, `C2ConvexDTLZ2`, `C3DTLZ1`, `C3DTLZ4`, `CSDP` |
+| Mating | `TournamentMating`, `RandomMating` |
+| Crossover | `SBX` |
+| Mutation | `PolynomialMutation`, `NoMutation` |
+| Reference directions | `DasDennisDirections`, `AdaptiveRVEADirections`, `UserDefinedDirections` |
+| Environmental selection | `NSGA3EnvironmentSelector`, `RVEAEnvironmentSelector` |
+| Custom strategies | `PythonProblem`, `PythonMating`, `PythonCrossover`, `PythonMutation`, `PythonReferenceDirections`, `PythonEnvironmentSelector` |
 
 ## Requirements
 
@@ -44,8 +106,20 @@ CMAKE_CUDA_ARCHITECTURES=89 TORCH_CUDA_ARCH_LIST=8.9 \
   python -m pip install . --no-build-isolation
 ```
 
-Replace `89` and `8.9` with the compute capability of the target GPU. For an
-editable development installation, replace `install .` with `install -e .`.
+Replace `89` and `8.9` with the compute capability of the target GPU. Common
+values:
+
+| `CMAKE_CUDA_ARCHITECTURES` | Representative GPUs |
+| ---: | --- |
+| 80 | A100 |
+| 86 | RTX 30 series |
+| 89 | RTX 40 series |
+| 90 | H100 / H200 |
+| 100 | B100 / B200 |
+| 120 | RTX 50 series, RTX PRO 6000 Blackwell |
+
+For an editable development installation, replace `install .` with
+`install -e .`.
 
 ## Quick start
 
@@ -75,7 +149,44 @@ while not algorithm.finished:
 result = algorithm.result()
 ```
 
-See [`examples/`](examples/) for additional runnable programs.
+Custom problems are plain PyTorch. Any `torch` computation works inside
+`evaluate`, including neural networks:
+
+```python
+import torch
+import cuda_moea as cm
+
+class MyProblem(cm.PythonProblem):
+    def __init__(self):
+        super().__init__(dimension=32, objectives=3,
+                         lower_bounds=-1.0, upper_bounds=1.0)
+
+    def evaluate(self, x, context):
+        # x: (N, 32) CUDA tensor -> objectives: (N, 3) CUDA tensor
+        return torch.stack([(x ** 2).sum(dim=1),
+                            ((x - 0.5) ** 2).sum(dim=1),
+                            ((x + 0.5) ** 2).sum(dim=1)], dim=1)
+
+algorithm = cm.NSGA3(
+    population_size=4096,
+    max_generations=500,
+    problem=MyProblem(),
+    device="cuda:0",
+)
+result = algorithm.run()
+```
+
+## Examples
+
+Runnable programs in [`examples/`](examples/):
+
+- [`nsga3_torch.py`](examples/nsga3_torch.py) — NSGA-III on 500-variable
+  DTLZ1 with a 16384-strong population and periodic snapshots.
+- [`rvea_torch.py`](examples/rvea_torch.py) — RVEA on the constrained CSDP
+  problem through the generic `Algorithm` entry point.
+- [`python_example.py`](examples/python_example.py) — a fully custom setup:
+  neural-network objective plus user-defined mating, crossover, mutation, and
+  reference directions.
 
 ## Documentation
 
@@ -110,11 +221,11 @@ CUDA-MOEA/
 ├── examples/             # Python examples
 ├── python/
 │   ├── cuda_moea/        # Public Python package
-│   └── csrc/              # Private native CUDA extension
-├── tests/                 # Unit, evaluation, and benchmark suites
-├── CMakeLists.txt         # Native build configuration
-├── pyproject.toml         # Python package metadata
-└── setup.py               # CMake-backed extension build
+│   └── csrc/             # Private native CUDA extension
+├── tests/                # Unit, evaluation, and benchmark suites
+├── CMakeLists.txt        # Native build configuration
+├── pyproject.toml        # Python package metadata
+└── setup.py              # CMake-backed extension build
 ```
 
 ## Release status
