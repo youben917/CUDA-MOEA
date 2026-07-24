@@ -38,7 +38,16 @@ PyTorch、CUDA Toolkit 和宿主编译器必须 ABI 兼容。建议在目标 PyT
 
 ### 2.2 pip 安装
 
-在项目根目录执行：
+从 PyPI 安装最新发布版本：
+
+```bash
+python -m pip install cuda-moea
+```
+
+预编译 wheel 面向 Linux x86_64、CPython 3.11 和 CUDA 12.8 版 PyTorch，覆盖
+计算能力 80、86、89、90、100、120；其他环境会改用源码包本地编译。
+
+从源码检出安装则在项目根目录执行：
 
 ```bash
 cd CUDA-MOEA

@@ -58,6 +58,14 @@ CMAKE_CUDA_ARCHITECTURES=89 TORCH_CUDA_ARCH_LIST=8.9 \
 wheel 包含 Python API 和编译后的扩展。源码发布包通过 `MANIFEST.in` 收录扩展源码、文档、
 示例、测试、派生数据、图表和报告；构建产物、缓存与 `output/` 原始运行目录不会提交。
 
+以与发布工作流（`.github/workflows/publish.yml`）相同的方式构建源码发布包：
+
+```bash
+python -m build --sdist
+```
+
+向注册仓库的上传仅通过该标签触发的工作流进行，请勿手动上传本地构建产物。
+
 ## 报告维护
 
 仓库保留用于复核报告的 CSV、图表和生成脚本。更新报告前应先阅读
