@@ -230,6 +230,31 @@ CUDA-MOEA/
 └── setup.py              # 基于 CMake 的扩展构建
 ```
 
+## 更新日志
+
+### [0.2.0](https://github.com/youben917/CUDA-MOEA/releases/tag/v0.2.0)
+
+- 新增 `NativeProblem`，可沿用原有 `IProblemEvaluator` 接口编写 C++/CUDA
+  自定义问题，并通过 Python API 使用。
+- 支持手动编译、首次使用时编译并缓存，以及在构建 Python 包时按需编译。
+  兼容的缓存构建会被复用，修改问题参数无需重新编译。
+- 随包提供原生扩展 SDK 和共享 CUDA 核心，支持参数校验和 SDK 兼容性检查。
+- 新增 [BiSphere 示例](examples/native/bi_sphere/)和
+  [原生问题指南](docs/NATIVE_PROBLEMS.zh-CN.md)，并补充编译缓存、数值结果、
+  CUDA stream、重置和结果生命周期测试。
+- 新增 PyTorch 与原生实现的配对性能测试、图表及
+  [中文报告](tests/benchmark/native/results/REPORT.zh-CN.md)
+  （[PDF](tests/benchmark/native/results/REPORT.zh-CN.pdf)），分别报告问题评估
+  与完整优化的耗时。
+
+### [0.1.0](https://github.com/youben917/CUDA-MOEA/releases/tag/v0.1.0)
+
+- 首次发布 Python/PyTorch 包，提供 NSGA-III、RVEA 的 CUDA 实现、内置测试问题
+  和可配置的进化算子。
+- 支持 PyTorch 自定义问题与算子、逐代执行、零拷贝种群视图和结果快照。
+- 建立自动化发布流程：源码包发布到 PyPI，预编译 Linux CUDA wheel 随
+  GitHub Release 提供。
+
 ## 发布状态
 
 包元数据标识的当前版本为 `0.2.0`。推送 `v<版本号>` 标签会触发

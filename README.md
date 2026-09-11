@@ -245,6 +245,34 @@ CUDA-MOEA/
 └── setup.py              # CMake-backed extension build
 ```
 
+## Changelog
+
+### [0.2.0](https://github.com/youben917/CUDA-MOEA/releases/tag/v0.2.0)
+
+- Added `NativeProblem` to use custom C++/CUDA evaluators through the Python
+  API, following the original `IProblemEvaluator` interface.
+- Added manual compilation, compilation on first use with caching, and optional
+  compilation during package builds. Compatible cached builds are reused;
+  changing problem parameters does not require recompilation.
+- Included the native extension SDK and shared CUDA core in the package, with
+  parameter validation and SDK compatibility checks.
+- Added a [BiSphere example](examples/native/bi_sphere/) and
+  [native problem guide](docs/NATIVE_PROBLEMS.md), plus tests for compilation
+  caching, numerical results, CUDA streams, reset, and result lifetime.
+- Added paired PyTorch/native performance measurements with charts and a
+  [Chinese report](tests/benchmark/native/results/REPORT.zh-CN.md)
+  ([PDF](tests/benchmark/native/results/REPORT.zh-CN.pdf)). Evaluation and
+  complete optimization timings are reported separately.
+
+### [0.1.0](https://github.com/youben917/CUDA-MOEA/releases/tag/v0.1.0)
+
+- Initial Python/PyTorch release with CUDA implementations of NSGA-III and RVEA,
+  built-in benchmark problems, and configurable evolutionary operators.
+- Provided PyTorch custom problems and operators, step-by-step execution,
+  zero-copy population views, and result snapshots.
+- Established automated releases: source distributions on PyPI and prebuilt
+  Linux CUDA wheels attached to GitHub Releases.
+
 ## Release status
 
 The package metadata identifies the current version as `0.2.0`. Pushing a
