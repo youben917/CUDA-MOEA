@@ -1,6 +1,9 @@
 #include "adapters.h"
+#include "native_problem.h"
 
 #include <algorithm>
+#include <chrono>
+#include <climits>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -460,10 +463,65 @@ ProblemKind problem_kind(const std::string& name) {
 } // namespace
 
 std::unique_ptr<IProblemEvaluator> make_problem(const py::dict& s) {
+    if (type_of(s) == "NativeProblem") return make_native_problem(s);
     if (type_of(s) == "PythonProblem") return std::make_unique<PythonProblem>(s);
     return ProblemFactory::create(problem_kind(py::cast<std::string>(s["kind"])),
         py::cast<int>(s["dimension"]), py::cast<int>(s["objectives"]),
         py::cast<float>(s["constraint_activation_ratio"]));
+}
+
+py::dict benchmark_problem(const py::dict& spec, py::object variables, int repeats, int warmup) {
+    if (repeats <= 0 || warmup < 0) throw std::invalid_argument("Invalid benchmark repeat/warmup count");
+    auto x = py::cast<torch::Tensor>(variables);
+    if (!x.is_cuda() || x.scalar_type() != torch::kFloat32 || x.dim() != 2 ||
+        x.size(0) <= 0 || x.size(0) > INT_MAX || x.size(1) > INT_MAX)
+        throw std::invalid_argument("variables must be a nonempty 2-D float32 CUDA Tensor");
+    c10::cuda::CUDAGuard device_guard(x.device());
+    x = x.contiguous();
+    CudaConfig config;
+    config.device_id = x.get_device(); config.enable_warmup = false;
+    CudaContext cuda(config);
+    // Make input production visible before using the independent evaluation stream.
+    auto check = [](cudaError_t status) {
+        if (status != cudaSuccess) throw std::runtime_error(cudaGetErrorString(status));
+    };
+    check(cudaStreamSynchronize(c10::cuda::getCurrentCUDAStream(x.get_device()).stream()));
+    auto guard = stream_guard(cuda.evaluation_stream(), x.get_device());
+    auto problem = make_problem(spec);
+    const auto& info = problem->info();
+    if (x.size(1) != info.dimension) throw std::invalid_argument("variables dimension does not match problem");
+    Population population(x.size(0), info.dimension, info.objective_count, cuda);
+    // Bounds are allocated on the execution stream, then written below on the
+    // evaluation stream. Honor the async allocation's stream ordering.
+    cuda.wait_execution_on_evaluation();
+    population.set_bounds(info.lower_bounds, info.upper_bounds, cuda.evaluation_stream());
+    auto view = population.view();
+    view.variables = x.data_ptr<float>();
+    struct Event {
+        cudaEvent_t value = nullptr;
+        ~Event() { if (value) cudaEventDestroy(value); }
+    } start, stop;
+    check(cudaEventCreate(&start.value)); check(cudaEventCreate(&stop.value));
+    double wall_ms;
+    float cuda_ms;
+    {
+        py::gil_scoped_release release;
+        problem->initialize(cuda);
+        const EvaluationContext context{0, 1, cuda};
+        for (int i = 0; i < warmup; ++i) problem->evaluate(view, context, cuda.evaluation_stream());
+        cuda.synchronize();
+        auto begin = std::chrono::steady_clock::now();
+        check(cudaEventRecord(start.value, cuda.evaluation_stream()));
+        for (int i = 0; i < repeats; ++i) problem->evaluate(view, context, cuda.evaluation_stream());
+        check(cudaEventRecord(stop.value, cuda.evaluation_stream()));
+        check(cudaEventSynchronize(stop.value));
+        wall_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin).count();
+        check(cudaEventElapsedTime(&cuda_ms, start.value, stop.value));
+    }
+    py::dict result;
+    result["wall_ms_per_eval"] = wall_ms / repeats;
+    result["cuda_ms_per_eval"] = cuda_ms / repeats;
+    return result;
 }
 
 std::unique_ptr<IMatingSelector> make_mating(const py::dict& s) {

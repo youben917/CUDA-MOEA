@@ -6,6 +6,7 @@
 #include <torch/extension.h>
 
 #include "adapters.h"
+#include "native_problem.h"
 #include "cuda_moea/factory/algorithm_factory.cuh"
 
 namespace py = pybind11;
@@ -151,6 +152,9 @@ private:
 
 PYBIND11_MODULE(_C, module) {
     module.doc() = "PyTorch bindings for CUDA-MOEA";
+    module.def("native_problem_schema", &cuda_moea::python::native_problem_schema);
+    module.def("benchmark_problem", &cuda_moea::python::benchmark_problem,
+               py::arg("spec"), py::arg("variables"), py::arg("repeats"), py::arg("warmup"));
     py::class_<PyAlgorithm, std::shared_ptr<PyAlgorithm>>(module, "Algorithm")
         .def(py::init<const std::string&, const py::dict&, const py::dict&,
                       const py::dict&, const py::dict&, const py::dict&,

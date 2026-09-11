@@ -18,7 +18,9 @@ The public API includes:
 - CUDA tensor results, zero-copy population views, and optional copied results
 - periodic population snapshots
 
-The package does not expose a standalone CLI or a public native-language API.
+`cm.NativeProblem` also accepts compiled C++/CUDA problem implementations. See
+[Native problems](NATIVE_PROBLEMS.md) for its constructor, SDK contract, build
+CLI, cache controls, precompiled libraries and evaluation benchmark API.
 
 ## 2. Installation and import
 

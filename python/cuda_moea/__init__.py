@@ -15,6 +15,7 @@ from ._specs import (
 __version__ = "0.1.0"
 
 __all__ = [
+    "NativeProblem",
     "Algorithm", "AlgorithmBuilder", "NSGA3", "RVEA", "Population", "Result",
     "CudaConfig", "SBX", "PolynomialMutation", "NoMutation",
     "RandomMating", "TournamentMating", "DasDennisDirections",
@@ -23,3 +24,11 @@ __all__ = [
     "PythonProblem", "PythonMating", "PythonCrossover", "PythonMutation",
     "PythonReferenceDirections", "PythonEnvironmentSelector",
 ] + _problem.__all__
+
+
+def __getattr__(name):
+    # Keep `python -m cuda_moea.native` free of runpy double-import warnings.
+    if name == "NativeProblem":
+        from .native import NativeProblem
+        return NativeProblem
+    raise AttributeError(name)

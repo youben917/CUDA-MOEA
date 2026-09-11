@@ -1,5 +1,9 @@
 include CMakeLists.txt
 recursive-include python/csrc *.cpp *.h *.cu *.cuh CMakeLists.txt
+recursive-include python/csrc *.cmake.in
+prune python/cuda_moea/sdk
+prune python/cuda_moea/lib
+prune python/cuda_moea/native_problems
 graft docs
 graft examples
 graft tests

@@ -17,8 +17,9 @@ CUDA-MOEA 是运行在 NVIDIA GPU 上的多目标进化算法（MOEA）Python/Py
 整个进化循环——问题评估、交配选择、交叉、变异、参考方向维护和环境选择——
 全部以 CUDA 原生内核执行，种群数据在世代之间始终驻留 GPU，无需回传 host。
 
-本仓库只提供 Python 公共 API。构建时使用的原生 CUDA 后端以私有的
-`cuda_moea._C` 扩展形式打包，不提供独立的命令行工具或公共 C++ API。
+算法通过 Python API 配置和使用。除 PyTorch 自定义问题外，还支持沿用原
+C++ `IProblemEvaluator` 接口的[原生问题扩展](docs/NATIVE_PROBLEMS.zh-CN.md)，
+可独立编译并缓存；扩展 SDK 和共享 CUDA 核心随包提供。
 
 对应的研究论文将于 2026 年 8 月发布。
 

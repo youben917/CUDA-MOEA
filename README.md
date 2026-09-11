@@ -19,9 +19,10 @@ evaluation, mating, crossover, mutation, reference-direction maintenance, and
 environmental selection — runs as CUDA-native kernels, so population data
 never leaves the GPU between generations.
 
-The supported public interface is Python. The native CUDA backend is packaged
-as the private `cuda_moea._C` extension; it is not a standalone CLI or a
-public C++ API.
+Algorithms are configured through Python. In addition to PyTorch problems,
+[native problem extensions](docs/NATIVE_PROBLEMS.md) can implement the original
+C++ `IProblemEvaluator` interface and compile independently with caching.
+The package includes the extension SDK and shared CUDA core.
 
 We will release the corresponding research article in August 2026.
 

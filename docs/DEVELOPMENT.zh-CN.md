@@ -14,7 +14,9 @@
 - `tests/benchmark/`：DTLZ、MoRobtrol benchmark、派生数据、图表和报告；
 - `docs/API.md`：公开 API 参考。
 
-原生后端仅用于构建 `cuda_moea._C`，不是独立的公共接口。修改后端时应通过 Python API
+原生后端构建共享核心和 `cuda_moea._C`。随包 SDK 支持 `IProblemEvaluator` 扩展，
+精确构建标识用于拒绝不兼容的动态库。独立构建、缓存、调试和随 wheel 打包的方法见
+[原生问题指南](NATIVE_PROBLEMS.zh-CN.md)。修改后端时应通过 Python API
 和 `tests/python/` 验证行为。
 
 ## 开发安装
@@ -55,7 +57,8 @@ CMAKE_CUDA_ARCHITECTURES=89 TORCH_CUDA_ARCH_LIST=8.9 \
   python -m pip wheel . --no-build-isolation --no-deps --wheel-dir dist
 ```
 
-wheel 包含 Python API 和编译后的扩展。源码发布包通过 `MANIFEST.in` 收录扩展源码、文档、
+wheel 包含 Python API、编译后的扩展、共享核心、SDK，以及显式指定的原生问题。
+源码发布包通过 `MANIFEST.in` 收录扩展源码、文档、
 示例、测试、派生数据、图表和报告；构建产物、缓存与 `output/` 原始运行目录不会提交。
 
 以与发布工作流（`.github/workflows/publish.yml`）相同的方式构建源码发布包：

@@ -8,6 +8,9 @@
 /_skbuild/
 *.egg-info/
 *.so
+/python/cuda_moea/sdk/
+/python/cuda_moea/lib/
+/python/cuda_moea/native_problems/
 __pycache__/
 .pytest_cache/
 output/

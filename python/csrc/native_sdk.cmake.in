@@ -1,0 +1,35 @@
+# Installed SDK: no source-checkout or build-machine paths.
+get_filename_component(_cm_sdk "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+get_filename_component(_cm_package "${_cm_sdk}/.." ABSOLUTE)
+find_package(CUDAToolkit REQUIRED)
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "@CMAKE_CXX_COMPILER_ID@" OR
+   NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "@CMAKE_CXX_COMPILER_VERSION@")
+    message(FATAL_ERROR "Native problems must use the SDK host compiler: @CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@")
+endif()
+if(NOT CMAKE_CUDA_COMPILER_VERSION VERSION_EQUAL "@CMAKE_CUDA_COMPILER_VERSION@")
+    message(FATAL_ERROR "Native problems must use SDK CUDA @CMAKE_CUDA_COMPILER_VERSION@")
+endif()
+if(NOT TARGET cuda_moea::native)
+    add_library(cuda_moea::native SHARED IMPORTED)
+    set_target_properties(cuda_moea::native PROPERTIES
+        IMPORTED_LOCATION "${_cm_package}/lib/libcuda_moea_native.so"
+        INTERFACE_INCLUDE_DIRECTORIES "${_cm_sdk}/include"
+        INTERFACE_LINK_LIBRARIES CUDA::cudart)
+    separate_arguments(_cm_flags NATIVE_COMMAND "@TORCH_CXX_FLAGS@")
+    set_property(TARGET cuda_moea::native PROPERTY INTERFACE_COMPILE_OPTIONS "${_cm_flags}")
+endif()
+
+# One plugin per source directory. Link additional libraries on this target.
+function(cuda_moea_add_problem target)
+    add_library(${target} SHARED ${ARGN})
+    target_link_libraries(${target} PRIVATE cuda_moea::native)
+    target_compile_features(${target} PRIVATE cxx_std_17 cuda_std_17)
+    target_compile_options(${target} PRIVATE
+        $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<CONFIG:Debug>>:-G;-lineinfo>)
+    target_link_options(${target} PRIVATE "-Wl,--no-undefined")
+    set_target_properties(${target} PROPERTIES
+        PREFIX "" OUTPUT_NAME "problem"
+        CUDA_SEPARABLE_COMPILATION ON CUDA_RESOLVE_DEVICE_SYMBOLS ON
+        BUILD_RPATH "${_cm_package}/lib;$ORIGIN/../../lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CUDA_MOEA_PLUGIN_OUTPUT_DIR}")
+endfunction()

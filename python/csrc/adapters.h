@@ -15,6 +15,7 @@ namespace cuda_moea::python {
 namespace py = pybind11;
 
 std::unique_ptr<IProblemEvaluator> make_problem(const py::dict& spec);
+py::dict benchmark_problem(const py::dict& spec, py::object variables, int repeats, int warmup);
 std::unique_ptr<IMatingSelector> make_mating(const py::dict& spec);
 std::unique_ptr<ICrossoverOperator> make_crossover(const py::dict& spec);
 std::unique_ptr<IMutationOperator> make_mutation(const py::dict& spec);

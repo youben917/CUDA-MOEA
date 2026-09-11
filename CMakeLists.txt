@@ -82,7 +82,7 @@ set(CUDA_MOEA_RVEA_SELECTION_SOURCES
     ${CUDA_MOEA_NATIVE_ROOT}/src/selection/rvea/kernels/reference_partition.cu
 )
 
-add_library(cuda_moea_native STATIC
+add_library(cuda_moea_native SHARED
     ${CUDA_MOEA_NATIVE_ROOT}/src/algorithm/algorithm.cu
     ${CUDA_MOEA_NATIVE_ROOT}/src/algorithm/data_recorder.cu
     ${CUDA_MOEA_NATIVE_ROOT}/src/builder/algorithm_builder.cu

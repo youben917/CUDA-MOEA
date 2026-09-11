@@ -16,9 +16,11 @@ report maintenance. Run all commands from the repository root unless noted.
   derived data, figures, and reports.
 - `docs/API.md` is the authoritative public API reference.
 
-The native backend exists to build `cuda_moea._C`; it is not a public native
-interface. Validate backend changes through the Python API and
-`tests/python/`.
+The native backend builds the shared core and `cuda_moea._C`. The packaged SDK
+supports `IProblemEvaluator` extensions; its exact build identifier rejects
+incompatible binaries. See [native problem development](NATIVE_PROBLEMS.md)
+for independent builds, caching, debugging, and optional wheel bundling.
+Validate backend changes through the Python API and `tests/python/`.
 
 ## Toolchain
 
@@ -74,7 +76,8 @@ CMAKE_CUDA_ARCHITECTURES=89 TORCH_CUDA_ARCH_LIST=8.9 \
   python -m pip wheel . --no-build-isolation --no-deps --wheel-dir dist
 ```
 
-The wheel contains the Python package and compiled extension. The source
+The wheel contains the Python package, compiled extension, shared core, SDK,
+and any explicitly bundled native problems. The source
 manifest includes the native extension sources plus `docs/`, `examples/`, and
 `tests/`. Build outputs, caches, and raw benchmark `output/` directories should
 not be treated as source artifacts.

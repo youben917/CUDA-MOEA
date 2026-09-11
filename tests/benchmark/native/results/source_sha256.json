@@ -1,0 +1,9 @@
+{
+  "examples/native_problem.py": "8a956f1df4636cec78f49d6f1398d5025aac1801172bfb592c4669e0df95891b",
+  "python/csrc/adapters.cpp": "3235167f829e4a623efca9b73b120c6dd8b317504e17dd77d2781fd496a4c413",
+  "tests/benchmark/native/run_benchmark.py": "1498fa3a6049612800b6caec892f7f862de76f5e1a2d764e6f4b812f7dc82903",
+  "examples/native/bi_sphere/CMakeLists.txt": "27a022d852802a32aa010bcb52c30c4f48c2daf7789736910032bd1aef2d92ee",
+  "examples/native/bi_sphere/problem.cuh": "688b68b041915eb6725c0416488c6b7950ef02d3a78159eac7a80fe9d40773f8",
+  "examples/native/bi_sphere/registration.cpp": "e6b773756ae5ebe20d1e5ae70b22d846f5bda2212b1fda49828aca341d5d3cda",
+  "examples/native/bi_sphere/problem.cu": "b8b69358e239a6d69e448d866059a69de9627bba561ce99100d174c91598ee1b"
+}

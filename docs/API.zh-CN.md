@@ -22,6 +22,9 @@ Python API 提供：
 算法生命周期和内置算子由包内的 CUDA 后端执行，PyTorch 用于张量交互和执行用户定义
 的策略回调。
 
+`cm.NativeProblem` 还支持编译后的 C++/CUDA 自定义问题。构造参数、SDK 约定、
+编译命令、缓存、预编译加载及评估计时接口见[原生问题指南](NATIVE_PROBLEMS.zh-CN.md)。
+
 ## 2. 安装与导入
 
 ### 2.1 环境要求
