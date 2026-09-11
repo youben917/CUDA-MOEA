@@ -8,7 +8,7 @@ English | [简体中文](README.zh-CN.md)
 
 GPU-accelerated multi-objective evolutionary algorithms for PyTorch.
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.2.0-blue)
 ![Python](https://img.shields.io/badge/python-%E2%89%A53.9-blue)
 ![PyTorch](https://img.shields.io/badge/pytorch-%E2%89%A52.1-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -247,7 +247,7 @@ CUDA-MOEA/
 
 ## Release status
 
-The package metadata identifies the current version as `0.1.0`. Pushing a
+The package metadata identifies the current version as `0.2.0`. Pushing a
 `v<version>` tag runs the automated release workflow in
 `.github/workflows/publish.yml`: version-consistency check, tests, sdist and
 Linux CUDA wheel builds, PyPI upload through trusted publishing, and the

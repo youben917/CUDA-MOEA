@@ -87,7 +87,7 @@ correct:
 
 ```bash
 python -m pip wheel . --no-build-isolation --no-deps --wheel-dir dist
-python -m zipfile -l dist/cuda_moea-0.1.0-*.whl
+python -m zipfile -l dist/cuda_moea-0.2.0-*.whl
 ```
 
 Build the source distribution the same way the release workflow

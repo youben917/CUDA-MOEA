@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(cuda_moea VERSION 0.1.0 LANGUAGES CXX CUDA)
+project(cuda_moea VERSION 0.2.0 LANGUAGES CXX CUDA)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

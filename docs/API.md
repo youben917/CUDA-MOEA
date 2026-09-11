@@ -50,7 +50,7 @@ Replace both architecture values for the target GPU. Then import the package:
 ```python
 import cuda_moea as cm
 
-print(cm.__version__)  # 0.1.0
+print(cm.__version__)  # 0.2.0
 ```
 
 ## 3. Minimal example

@@ -8,7 +8,7 @@
 
 面向 PyTorch 的 GPU 加速多目标进化算法库。
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.2.0-blue)
 ![Python](https://img.shields.io/badge/python-%E2%89%A53.9-blue)
 ![PyTorch](https://img.shields.io/badge/pytorch-%E2%89%A52.1-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -232,7 +232,7 @@ CUDA-MOEA/
 
 ## 发布状态
 
-包元数据标识的当前版本为 `0.1.0`。推送 `v<版本号>` 标签会触发
+包元数据标识的当前版本为 `0.2.0`。推送 `v<版本号>` 标签会触发
 `.github/workflows/publish.yml` 中的自动化发布流程：版本一致性检查、
 测试、构建 sdist 与 Linux CUDA wheel、通过可信发布上传 PyPI，并创建
 GitHub Release。当前检出尚未声明支持/安全渠道。

@@ -76,7 +76,7 @@ CMAKE_CUDA_ARCHITECTURES=89 TORCH_CUDA_ARCH_LIST=8.9 \
 ```python
 import cuda_moea as cm
 
-print(cm.__version__)  # 0.1.0
+print(cm.__version__)  # 0.2.0
 ```
 
 ## 3. 最小示例
